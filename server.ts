@@ -67,7 +67,7 @@ app.get("/api/average_currency", async (c) => {
   console.log(`Start date: ${startDate.toISOString()}`);
   console.log(`End date: ${endDate.toISOString()}`);
   let need_fetch = false;
-  const promises = getDates(startDate, endDate).map(async (date) => {
+  const promises1 = getDates(startDate, endDate).map(async (date) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     if (
@@ -88,13 +88,12 @@ app.get("/api/average_currency", async (c) => {
       need_fetch = true;
     }
   });
-  Promise.all(promises);
+  await Promise.all(promises1);
   if (need_fetch) {
     c.status(202);
     return c.text("Data is being fetched");
   }
-  const currencyDatas = [];
-  for (const date of getDates(startDate, endDate)) {
+  const promises2 = getDates(startDate, endDate).map(async (date) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const [pair1, pair2] = await currencyDbClient.getCurrencyData(
@@ -103,11 +102,12 @@ app.get("/api/average_currency", async (c) => {
       pair1Code,
       pair2Code
     );
-    currencyDatas.push({
+    return {
       pair1: pair1.value,
       pair2: pair2.value,
-    });
-  }
+    };
+  });
+  const currencyDatas = await Promise.all(promises2);
   if (currencyDatas.length === 0) {
     throw new Error("currencyDatas is empty");
   }
