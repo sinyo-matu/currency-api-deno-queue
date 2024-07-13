@@ -49,24 +49,12 @@ const ResponseSchema202 = z.string().openapi({
   description: "response when data is being fetched",
 });
 
-const AuthTokenSchema = z.object({
-  "X-Api-Key": z.string().openapi({
-    param: {
-      name: "X-Api-Key",
-      in: "header",
-      description: "API key",
-    },
-    example: "aBc%123",
-  }),
-});
-
 export const route = createRoute({
   tags: ["currency"],
   method: "get",
   path: "/api/average_currency",
   request: {
     query: QuerySchema,
-    headers: AuthTokenSchema,
   },
   responses: {
     200: {
