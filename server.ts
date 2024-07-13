@@ -41,6 +41,8 @@ export function calculateAverageCurrency(
   return pair2Average / pair1Average;
 }
 
+async function handleNewDateTarget(date: Date) {}
+
 app.use("/api/*", cors());
 
 app.onError((err, c) => {
@@ -65,7 +67,7 @@ app.get("/api/average_currency", async (c) => {
   console.log(`Start date: ${startDate.toISOString()}`);
   console.log(`End date: ${endDate.toISOString()}`);
   let need_fetch = false;
-  for (const date of getDates(startDate, endDate)) {
+  const promises = getDates(startDate, endDate).map(async (date) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     if (
@@ -85,7 +87,8 @@ app.get("/api/average_currency", async (c) => {
       );
       need_fetch = true;
     }
-  }
+  });
+  Promise.all(promises);
   if (need_fetch) {
     c.status(202);
     return c.text("Data is being fetched");
