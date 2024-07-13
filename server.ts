@@ -8,6 +8,12 @@ const app = new Hono();
 const currencyDbClient = new CurrencyDataDbClient(await Deno.openKv());
 const currencyQueueClient = new CurrencyDataQueueClient(await Deno.openKv());
 
+const CURRENCY_API_KEY = Deno.env.get("CURRENCY_API_KEY");
+if (!CURRENCY_API_KEY) {
+  throw new Error("CURRENCY_API_KEY is required");
+}
+currencyQueueClient.startConsumeFetchJob(currencyDbClient, CURRENCY_API_KEY);
+
 const AUTH_HEADER = Deno.env.get("AUTH_HEADER");
 const AUTH_TOKEN = Deno.env.get("AUTH_TOKEN");
 if (!AUTH_HEADER || !AUTH_TOKEN) {
