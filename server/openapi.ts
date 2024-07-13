@@ -2,7 +2,7 @@ import { z } from "@hono/zod-openapi";
 import { createRoute } from "@hono/zod-openapi";
 
 const QuerySchema = z.object({
-  start_date: z.date().openapi({
+  start_date: z.string().openapi({
     param: {
       name: "start_date",
       in: "query",
@@ -11,7 +11,7 @@ const QuerySchema = z.object({
     },
     example: "2021-01-01",
   }),
-  end_date: z.date().openapi({
+  end_date: z.string().openapi({
     param: {
       name: "end_date",
       in: "query",
