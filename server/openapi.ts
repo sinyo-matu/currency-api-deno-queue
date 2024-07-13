@@ -73,5 +73,21 @@ export const route = createRoute({
       },
       description: "response when data is being fetched",
     },
+    401: {
+      content: {
+        "text/plain": {
+          schema: z.string(),
+        },
+      },
+      description: "Unauthorized",
+    },
+    400: {
+      content: {
+        "text/plain": {
+          schema: z.string(),
+        },
+      },
+      description: "Missing parameters",
+    },
   },
 });
