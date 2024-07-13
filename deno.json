@@ -1,11 +1,12 @@
 {
   "imports": {
-    "@hono/hono": "jsr:@hono/hono@^4.4.13",
+    "@hono/hono": "npm:hono",
+    "@hono/zod-openapi": "npm:@hono/zod-openapi",
+    "@hono/swagger-ui": "npm:@hono/swagger-ui",
     "@std/dotenv": "jsr:@std/dotenv@^0.224.2",
     "zod": "https://deno.land/x/zod@v3.23.8/mod.ts"
   },
   "tasks": {
-    "start:consumer": "deno run -A --unstable-kv currency-fetch-job-consumer.ts",
-    "start:server": "deno run -A --unstable-kv server.ts"
+    "start:server": "deno run -A --unstable-kv main.ts"
   }
 }

@@ -1,10 +1,13 @@
-import { Hono } from "@hono/hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "@hono/hono/cors";
-import { CurrencyDataDbClient } from "./currency-data-db/mod.ts";
-import { CurrencyDataQueueClient } from "./currency-data-fetch-queue/client.ts";
+import { CurrencyDataDbClient } from "../currency-data-db/mod.ts";
+import { CurrencyDataQueueClient } from "../currency-data-fetch-queue/client.ts";
+import { swaggerUI } from "@hono/swagger-ui";
 import "@std/dotenv/load";
+import { route } from "./openapi.ts";
 
-const app = new Hono();
+const app = new OpenAPIHono();
+
 const currencyDbClient = new CurrencyDataDbClient(await Deno.openKv());
 const currencyQueueClient = new CurrencyDataQueueClient(await Deno.openKv());
 
@@ -41,9 +44,21 @@ export function calculateAverageCurrency(
   return pair2Average / pair1Average;
 }
 
-async function handleNewDateTarget(date: Date) {}
-
 app.use("/api/*", cors());
+
+app.openapi(route, (c) => {
+  return c.json({
+    average_currency: 20.1,
+  });
+});
+app.doc("/doc-text", {
+  openapi: "3.0.0",
+  info: {
+    version: "0.1.0",
+    title: "Currency API",
+  },
+});
+app.get("doc", swaggerUI({ url: "/doc-text" }));
 
 app.onError((err, c) => {
   console.error(`${err}`);
@@ -119,4 +134,6 @@ app.get("/api/average_currency", async (c) => {
 
 app.notFound((c) => c.text("Not found", 404));
 
-Deno.serve(app.fetch);
+export function startServer() {
+  Deno.serve(app.fetch);
+}
