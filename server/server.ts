@@ -46,26 +46,7 @@ export function calculateAverageCurrency(
 
 app.use("/api/*", cors());
 
-app.openapi(route, (c) => {
-  return c.json({
-    average_currency: 20.1,
-  });
-});
-app.doc("/doc-text", {
-  openapi: "3.0.0",
-  info: {
-    version: "0.1.0",
-    title: "Currency API",
-  },
-});
-app.get("doc", swaggerUI({ url: "/doc-text" }));
-
-app.onError((err, c) => {
-  console.error(`${err}`);
-  return c.text(err.toString());
-});
-
-app.get("/api/average_currency", async (c) => {
+app.openapi(route, async (c) => {
   if (c.req.header(AUTH_HEADER) !== AUTH_TOKEN) {
     c.status(401);
     return c.text("Unauthorized");
@@ -130,6 +111,20 @@ app.get("/api/average_currency", async (c) => {
   return c.json({
     average_currency: calculateAverageCurrency(currencyDatas),
   });
+});
+
+app.doc("/doc-text", {
+  openapi: "3.0.0",
+  info: {
+    version: "0.1.0",
+    title: "Currency API",
+  },
+});
+app.get("doc", swaggerUI({ url: "/doc-text" }));
+
+app.onError((err, c) => {
+  console.error(`${err}`);
+  return c.text(err.toString());
 });
 
 app.notFound((c) => c.text("Not found", 404));
